@@ -1,52 +1,87 @@
-# db/seeds.rb
+Habit.destroy_all
 
-Habit.create!([
+today = Date.today
+beginning_of_month = today.beginning_of_month
+end_of_month = today.end_of_month
+
+habits_data = [
   {
-    title: "Ranný beh",
-    description: "Ľahký kardio beh v parku na čerstvom vzduchu pre nastartovanie dňa.",
+    title: "Morning Run",
+    description: "Light cardio run in the park to start the day.",
     duration_in_min: 30,
-    scheduled_at: DateTime.now.change(hour: 7, min: 0)
+    time: { hour: 7, min: 0 },
+    days: [1, 3, 5, 8, 10, 12, 15, 17, 19, 22, 24, 26]
   },
   {
-    title: "Čítanie knižky",
-    description: "Prečítať aspoň jednu kapitolu z odbornej alebo rozvojovej literatúry.",
+    title: "Read a Book",
+    description: "Read at least one chapter of educational literature.",
     duration_in_min: 20,
-    scheduled_at: DateTime.now.change(hour: 21, min: 30)
+    time: { hour: 21, min: 30 },
+    days: (1..end_of_month.day).to_a
   },
   {
-    title: "Meditácia",
-    description: "Cvičenie všímavosti (mindfulness) a hlboké dýchanie na odbúranie stresu.",
+    title: "Meditation",
+    description: "Mindfulness practice and deep breathing for stress relief.",
     duration_in_min: 10,
-    scheduled_at: DateTime.now.change(hour: 6, min: 45)
+    time: { hour: 6, min: 45 },
+    days: [2, 4, 6, 9, 11, 13, 16, 18, 20, 23, 25, 27]
   },
   {
-    title: "Štúdium Ruby on Rails",
-    description: "Prechádzanie dokumentácie, písanie kódu a práca na vlastnom backend projekte.",
+    title: "Ruby on Rails Study",
+    description: "Going through documentation and building backend features.",
     duration_in_min: 60,
-    scheduled_at: DateTime.now.change(hour: 17, min: 0)
+    time: { hour: 17, min: 0 },
+    days: [1, 2, 4, 5, 8, 9, 11, 12, 15, 16, 18, 19, 22, 23, 25, 26]
   },
   {
-    title: "Silový tréning v posilňovni",
-    description: "Tréning celého tela s váhami zameraný na stred tela a chrbát.",
+    title: "Gym Workout",
+    description: "Full body strength training with weights.",
     duration_in_min: 75,
-    scheduled_at: DateTime.now.change(hour: 18, min: 0)
+    time: { hour: 18, min: 0 },
+    days: [2, 4, 9, 11, 16, 18, 23, 25]
   },
   {
-    title: "Precvičovanie cudzieho jazyka",
-    description: "Slovíčka v Duolingu a počúvanie podcastu v angličtine.",
+    title: "Language Practice",
+    description: "Duolingo vocabulary and listening to an English podcast.",
     duration_in_min: 15,
-    scheduled_at: DateTime.now.change(hour: 12, min: 30)
+    time: { hour: 12, min: 30 },
+    days: [3, 7, 10, 14, 17, 21, 24, 28]
   },
   {
-    title: "Večerný stretch & mobilita",
-    description: "Strečing celého tela pred spaním na zlepšenie flexibility a regeneráciu.",
+    title: "Evening Stretch",
+    description: "Full body stretching before sleep for flexibility and recovery.",
     duration_in_min: 15,
-    scheduled_at: DateTime.now.change(hour: 22, min: 0)
+    time: { hour: 22, min: 0 },
+    days: [1, 5, 8, 12, 15, 19, 22, 26]
   },
   {
-    title: "Plánovanie nasledujúceho dňa",
-    description: "Sumpár úloh, prioritizácia a príprava kalendára na zajtra.",
+    title: "Plan Next Day",
+    description: "Review tasks, set priorities, and prepare calendar for tomorrow.",
     duration_in_min: 10,
-    scheduled_at: DateTime.now.change(hour: 20, min: 45)
+    time: { hour: 20, min: 45 },
+    days: (1..end_of_month.day).to_a
   }
-])
+]
+
+habits_data.each do |data|
+  data[:days].each do |day_number|
+    next if day_number > end_of_month.day
+
+    scheduled_datetime = Time.zone.local(
+      today.year,
+      today.month,
+      day_number,
+      data[:time][:hour],
+      data[:time][:min]
+    )
+
+    Habit.create!(
+      title: data[:title],
+      description: data[:description],
+      duration_in_min: data[:duration_in_min],
+      scheduled_at: scheduled_datetime
+    )
+  end
+end
+
+puts "Successfully seeded habits for #{today.strftime('%B %Y')}!"
